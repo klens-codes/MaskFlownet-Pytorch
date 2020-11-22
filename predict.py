@@ -165,10 +165,10 @@ for idx, sample in enumerate(data_loader):
     if config.value['dataset'] == 'klens':
         for i in range(up_flow.shape[0]):
             disparity_writeout(
-                up_flow[i].premute(1, 2, 0),
+                up_flow[i].permute(1, 2, 0),
                 im0_path[i],
                 im1_path[i],
-                up_occ_mask[i].premute(1, 2, 0),
+                up_occ_mask[i].permute(1, 2, 0),
             )
 
     #epe.append(EpeLossWithMask()(up_flow, label, mask).detach())
