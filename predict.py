@@ -61,7 +61,7 @@ def disparity_writeout(disp, path_ref, path_meas, mask):
             ) +
             "_mask.png"
         ),
-        mask
+        mask*255
     )
 
 
