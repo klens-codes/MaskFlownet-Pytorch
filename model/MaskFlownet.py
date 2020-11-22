@@ -553,6 +553,7 @@ class MaskFlownet(nn.Module):
         c45 = self.conv5z(self.conv5y(self.conv5x(c44)))
         c46 = self.conv6z(self.conv6y(self.conv6x(c45)))
 
+        print("flow[0] = ",flows[0].shape)
         flow6 = flows[0]
 
         warp6u = (flow6*self.scale/self.strides[0]).unsqueeze(1)
