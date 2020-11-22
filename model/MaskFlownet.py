@@ -4,6 +4,8 @@ import torch.nn.functional as F
 from torch.autograd import Variable
 import numpy as np
 from torchvision import ops
+from frame_utils import writeFlow
+import flow_viz
 # ops.DeformConv2d()
 
 from .correlation_package.correlation import Correlation
@@ -554,6 +556,8 @@ class MaskFlownet(nn.Module):
         c46 = self.conv6z(self.conv6y(self.conv6x(c45)))
 
         print("flow[0] = ",flows[0].shape)
+        writeFlow("./flow[0].png",flow_viz.flow_to_image(flows[0][0].permute(1,2,0).cpu().numpy()))
+
         flow6 = flows[0]
 
         warp6u = (flow6*self.scale/self.strides[0]).unsqueeze(1)
