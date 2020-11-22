@@ -162,7 +162,8 @@ for idx, sample in enumerate(data_loader):
         up_occ_mask = F.interpolate(
             up_occ_mask, size=[shape[2], shape[3]], mode='bilinear')
 
-    print(up_occ_mask.shape)
+    print("left : ",im0_path[0], "right : ",im1_path[0])
+    print(torch.nonzero(up_occ_mask))
     if config.value['dataset'] == 'klens':
         for i in range(up_flow.shape[0]):
             disparity_writeout(
