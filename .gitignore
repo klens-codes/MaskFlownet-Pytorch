@@ -3,3 +3,4 @@
 *.egg-info
 model/correlation_package/build/
 model/correlation_package/dist/
+out*
