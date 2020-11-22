@@ -9,8 +9,55 @@ import config_folder as cf
 from data_loaders.Chairs import Chairs
 from data_loaders.kitti import KITTI
 from data_loaders.sintel import Sintel
+from data_loaders.KLens import KLens
 from model import MaskFlownet, MaskFlownet_S, Upsample, EpeLossWithMask
 
+def disparity_writeout(disp,path_ref,path_meas,mask):
+    # Warping
+    root_path = "./out_images/"
+    if not os.path.exists(root_path):
+        os.makedirs(root_path)
+    writeFlow(
+        os.path.join(
+            root_path,
+            os.path.basename(
+                os.path.splitext(path_ref)[0]
+            )+
+            "_"+
+            os.path.basename(
+                os.path.splitext(path_meas)[0]
+            )+
+            ".flo"),
+        disp
+    )
+    cv2.imwrite(
+        os.path.join(
+            root_path,
+            os.path.basename(
+                os.path.splitext(path_ref)[0]
+            )+
+            "_"+
+            os.path.basename(
+                os.path.splitext(path_meas)[0]
+            )+
+            "_flow.jpg"
+        ),
+        flow_viz.flow_to_image(disp)[:,:,[2,1,0]]
+    )
+    cv2.imwrite(
+        os.path.join(
+            root_path,
+            os.path.basename(
+                os.path.splitext(path_ref)[0]
+            )+
+            "_"+
+            os.path.basename(
+                os.path.splitext(path_meas)[0]
+            )+
+            "_mask.png"
+        ),
+        mask
+    )
 
 def centralize(img1, img2):
     rgb_mean = torch.cat((img1, img2), 2)
@@ -33,6 +80,8 @@ args = parser.parse_args()
 resize = (int(args.resize.split(',')[0]), int(args.resize.split(',')[1])) if args.resize else None
 num_workers = 2
 
+print(os.path.join('config_folder', args.dataset_cfg))
+
 with open(os.path.join('config_folder', args.dataset_cfg)) as f:
     config = cf.Reader(yaml.load(f))
 with open(os.path.join('config_folder', args.config)) as f:
@@ -51,6 +100,8 @@ elif config.value['dataset'] == 'chairs':
     dataset = Chairs(args.root_folder, split='valid')
 elif config.value['dataset'] == 'sintel':
     dataset = Sintel(args.root_folder, split='valid', subset='final')
+elif config.value['dataset'] == 'klens':
+    dataset = KLens()
 data_loader = torch.utils.data.DataLoader(dataset=dataset,
                                           shuffle=False,
                                           batch_size=args.batch,
@@ -62,6 +113,10 @@ epe = []
 for idx, sample in enumerate(data_loader):
     with torch.no_grad():
         im0, im1, label, mask, path = sample
+        if config.value['dataset'] == 'klens':
+            im0_path = path[0]
+            im1_path = path[1]
+        
         if isinstance(mask, list):
             mask = torch.ones((label.shape[0], label.shape[1], label.shape[2], 1), dtype=label.dtype, device=device)
 
@@ -93,11 +148,14 @@ for idx, sample in enumerate(data_loader):
         up_flow = F.interpolate(up_flow, size=[shape[2], shape[3]], mode='bilinear') * \
                   torch.tensor([shape[d] / up_flow.shape[d] for d in (2, 3)], device=device).view(1, 2, 1, 1)
         up_occ_mask = F.interpolate(up_occ_mask, size=[shape[2], shape[3]], mode='bilinear')
+    
+    if config.value['dataset'] == 'klens':
+        disparity_writeout(up_flow, im0_path, im1_path,up_occ_mask)
 
-    epe.append(EpeLossWithMask()(up_flow, label, mask).detach())
+    #epe.append(EpeLossWithMask()(up_flow, label, mask).detach())
     
     # Flip the flow to get the final prediction
-    final_flow = up_flow.flip(1)
+    #final_flow = up_flow.flip(1)
 
 
 print("AEPE: "+config.value['dataset'], torch.cat(epe).mean())
