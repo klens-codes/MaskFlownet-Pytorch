@@ -44,7 +44,7 @@ class KLens(Dataset):
         img0 = torch.tensor(img0/255.).float()
         img1 = torch.tensor(img1/255.).float()
 
-        return img0, img1,np.array([]),None, [im0_path , im1_path]
+        return img0, img1,np.array([]),np.array([]), [im0_path , im1_path]
 
 
 class Flo:
