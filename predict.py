@@ -152,8 +152,9 @@ for idx, sample in enumerate(data_loader):
                   torch.tensor([shape[d] / up_flow.shape[d] for d in (2, 3)], device=device).view(1, 2, 1, 1)
         up_occ_mask = F.interpolate(up_occ_mask, size=[shape[2], shape[3]], mode='bilinear')
     
+    print(up_flow.shape)
     if config.value['dataset'] == 'klens':
-        disparity_writeout(up_flow, im0_path, im1_path,up_occ_mask)
+        disparity_writeout(up_flow, im0_path[0], im1_path[0],up_occ_mask)
 
     #epe.append(EpeLossWithMask()(up_flow, label, mask).detach())
     
@@ -161,4 +162,4 @@ for idx, sample in enumerate(data_loader):
     #final_flow = up_flow.flip(1)
 
 
-print("AEPE: "+config.value['dataset'], torch.cat(epe).mean())
+print("\n\nCheck out_images for output!\n\n")
