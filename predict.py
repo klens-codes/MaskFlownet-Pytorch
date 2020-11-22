@@ -4,6 +4,7 @@ import torch
 import yaml
 import numpy as np
 import torch.nn.functional as F
+import cv2
 
 
 import config_folder as cf
