@@ -560,7 +560,7 @@ class MaskFlownet(nn.Module):
         print("flow[0] = ",flows[0].shape)
         rnd = random.random()
         cv2.imwrite("./flow["+str(rnd)+"].png",flow_viz.flow_to_image(flows[0][0].permute(1,2,0).cpu().numpy()))
-        writeflow("./flow["+str(rnd)+"].flo",flows[0][0].permute(1,2,0).cpu().numpy())
+        writeFlow("./flow["+str(rnd)+"].flo",flows[0][0].permute(1,2,0).cpu().numpy())
         flow6 = flows[0]
 
         warp6u = (flow6*self.scale/self.strides[0]).unsqueeze(1)
