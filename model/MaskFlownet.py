@@ -558,8 +558,8 @@ class MaskFlownet(nn.Module):
         c46 = self.conv6z(self.conv6y(self.conv6x(c45)))
 
         print("flow[0] = ",flows[0].shape)
-        raftflow_rw = flow[0].shape[1]
-        raftflow_rh = flow[0].shape[2]
+        raftflow_rw = flows[0].shape[1]
+        raftflow_rh = flows[0].shape[2]
         raftflow = torch.Tensor(v2.resize(raftflow,(raftflow_rh,raftflow_rw))/20).permute(2,0,1)
         print("raftflow.size()",raftflow.size())
         rnd = random.random()
