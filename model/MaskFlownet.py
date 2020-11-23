@@ -558,7 +558,7 @@ class MaskFlownet(nn.Module):
         c46 = self.conv6z(self.conv6y(self.conv6x(c45)))
 
         print("flow[0] = ",flows[0][0].shape)
-        cv2.imwrite("./flow["+str(random.randint())+"].png",flow_viz.flow_to_image(flows[0][0].permute(1,2,0).cpu().numpy()))
+        cv2.imwrite("./flow["+str(random.random()+"].png",flow_viz.flow_to_image(flows[0][0].permute(1,2,0).cpu().numpy()))
 
         flow6 = flows[0]
 
