@@ -3,6 +3,7 @@ import re
 import struct
 import glob
 import numpy as np
+import frame_utils
 import skimage
 import skimage.io
 
@@ -11,23 +12,24 @@ from torch.utils.data import Dataset
 
 
 class KLens(Dataset):
-    def __init__(self, root_path="/data2/opticalflow/KLENS/images/",root_path2="/data2/opticalflow/KLENS/pins/",filenumberlist=["0030","1106","1113","1132","1134","1167","1173"],split="train",ref="",meas=""):
+    def __init__(self,raft_path="/data2/opticalflow/rnd/opticalflow/RAFT/out_klens_raft_chairs", root_path="/data2/opticalflow/KLENS/images/",root_path2="/data2/opticalflow/KLENS/pins/",filenumberlist=["0030","1106","1113","1132","1134","1167","1173"],split="train",ref="",meas=""):
         super(KLens, self).__init__()
         self.split = split
+        raftflowpaths = glob.glob(raft_path)
         file_list = {}
         file_list['train'] = []
         file_list['valid'] = []
         file_list['test'] = []
         file_list['train+valid'] = []
         file_list = {}
-        file_list['train'] = [[os.path.join(root_path,"KLE_"+filenum+".jpg3.png"),os.path.join(root_path,"KLE_"+filenum+".jpg5.png")] for filenum in filenumberlist]
-        file_list['valid'] = []
-        file_list['test'] = [[os.path.join(root_path,"KLE_"+filenum+".jpg3.png"),os.path.join(root_path,"KLE_"+filenum+".jpg5.png")] for filenum in filenumberlist]
-        file_list['train+valid'] = [[os.path.join(root_path,"KLE_"+filenum+".jpg3.png"),os.path.join(root_path,"KLE_"+filenum+".jpg5.png")] for filenum in filenumberlist]
-        file_list["train"].extend([[os.path.join(root_path,"KLE_0309_exp_sub5.jpg"),os.path.join(root_path,"KLE_0309_exp_sub6.jpg")],[os.path.join(root_path,"KLE_0730_sub5.jpg"),os.path.join(root_path,"KLE_0730_sub6.jpg")],[os.path.join(root_path,"KLE_0747_sub5.jpg"),os.path.join(root_path,"KLE_0747_sub6.jpg")],[os.path.join(root_path,"KLE_9797clean_sub5.jpg"),os.path.join(root_path,"KLE_9797clean_sub6.jpg")],[os.path.join(root_path,"KLE_9803clean_sub5.jpg"),os.path.join(root_path,"KLE_9803clean_sub6.jpg")],[os.path.join(root_path,"NKM_0063_sub5.jpg"),os.path.join(root_path,"NKM_0063_sub6.jpg")],[os.path.join(root_path,"NKM_0109_sub5.jpg"),os.path.join(root_path,"NKM_0109_sub6.jpg")],[os.path.join(root_path,"scene_1_sub5.jpg"),os.path.join(root_path,"scene_1_sub6.jpg")]])
-        file_list["valid"].extend([[os.path.join(root_path,"KLE_0309_exp_sub5.jpg"),os.path.join(root_path,"KLE_0309_exp_sub6.jpg")],[os.path.join(root_path,"KLE_0730_sub5.jpg"),os.path.join(root_path,"KLE_0730_sub6.jpg")],[os.path.join(root_path,"KLE_0747_sub5.jpg"),os.path.join(root_path,"KLE_0747_sub6.jpg")],[os.path.join(root_path,"KLE_9797clean_sub5.jpg"),os.path.join(root_path,"KLE_9797clean_sub6.jpg")],[os.path.join(root_path,"KLE_9803clean_sub5.jpg"),os.path.join(root_path,"KLE_9803clean_sub6.jpg")],[os.path.join(root_path,"NKM_0063_sub5.jpg"),os.path.join(root_path,"NKM_0063_sub6.jpg")],[os.path.join(root_path,"NKM_0109_sub5.jpg"),os.path.join(root_path,"NKM_0109_sub6.jpg")],[os.path.join(root_path,"scene_1_sub5.jpg"),os.path.join(root_path,"scene_1_sub6.jpg")]])
-        file_list["test"].extend([[os.path.join(root_path,"KLE_0309_exp_sub5.jpg"),os.path.join(root_path,"KLE_0309_exp_sub6.jpg")],[os.path.join(root_path,"KLE_0730_sub5.jpg"),os.path.join(root_path,"KLE_0730_sub6.jpg")],[os.path.join(root_path,"KLE_0747_sub5.jpg"),os.path.join(root_path,"KLE_0747_sub6.jpg")],[os.path.join(root_path,"KLE_9797clean_sub5.jpg"),os.path.join(root_path,"KLE_9797clean_sub6.jpg")],[os.path.join(root_path,"KLE_9803clean_sub5.jpg"),os.path.join(root_path,"KLE_9803clean_sub6.jpg")],[os.path.join(root_path,"NKM_0063_sub5.jpg"),os.path.join(root_path,"NKM_0063_sub6.jpg")],[os.path.join(root_path,"NKM_0109_sub5.jpg"),os.path.join(root_path,"NKM_0109_sub6.jpg")],[os.path.join(root_path,"scene_1_sub5.jpg"),os.path.join(root_path,"scene_1_sub6.jpg")]])
-        file_list["train+valid"].extend([[os.path.join(root_path,"KLE_0309_exp_sub5.jpg"),os.path.join(root_path,"KLE_0309_exp_sub6.jpg")],[os.path.join(root_path,"KLE_0730_sub5.jpg"),os.path.join(root_path,"KLE_0730_sub6.jpg")],[os.path.join(root_path,"KLE_0747_sub5.jpg"),os.path.join(root_path,"KLE_0747_sub6.jpg")],[os.path.join(root_path,"KLE_9797clean_sub5.jpg"),os.path.join(root_path,"KLE_9797clean_sub6.jpg")],[os.path.join(root_path,"KLE_9803clean_sub5.jpg"),os.path.join(root_path,"KLE_9803clean_sub6.jpg")],[os.path.join(root_path,"NKM_0063_sub5.jpg"),os.path.join(root_path,"NKM_0063_sub6.jpg")],[os.path.join(root_path,"NKM_0109_sub5.jpg"),os.path.join(root_path,"NKM_0109_sub6.jpg")],[os.path.join(root_path,"scene_1_sub5.jpg"),os.path.join(root_path,"scene_1_sub6.jpg")]])
+        for filenum in filenumberlist:
+            for raftflowpath in raftflowpaths:
+                if "KLE_"+filenum in raftflowpath:
+                    file_list['train'].append([os.path.join(root_path,"KLE_"+filenum+".jpg3.png"),os.path.join(root_path,"KLE_"+filenum+".jpg5.png"),raftflowpath])
+        # file_list["train"].extend([[os.path.join(root_path,"KLE_0309_exp_sub5.jpg"),os.path.join(root_path,"KLE_0309_exp_sub6.jpg")],[os.path.join(root_path,"KLE_0730_sub5.jpg"),os.path.join(root_path,"KLE_0730_sub6.jpg")],[os.path.join(root_path,"KLE_0747_sub5.jpg"),os.path.join(root_path,"KLE_0747_sub6.jpg")],[os.path.join(root_path,"KLE_9797clean_sub5.jpg"),os.path.join(root_path,"KLE_9797clean_sub6.jpg")],[os.path.join(root_path,"KLE_9803clean_sub5.jpg"),os.path.join(root_path,"KLE_9803clean_sub6.jpg")],[os.path.join(root_path,"NKM_0063_sub5.jpg"),os.path.join(root_path,"NKM_0063_sub6.jpg")],[os.path.join(root_path,"NKM_0109_sub5.jpg"),os.path.join(root_path,"NKM_0109_sub6.jpg")],[os.path.join(root_path,"scene_1_sub5.jpg"),os.path.join(root_path,"scene_1_sub6.jpg")]])
+        # file_list["valid"].extend([[os.path.join(root_path,"KLE_0309_exp_sub5.jpg"),os.path.join(root_path,"KLE_0309_exp_sub6.jpg")],[os.path.join(root_path,"KLE_0730_sub5.jpg"),os.path.join(root_path,"KLE_0730_sub6.jpg")],[os.path.join(root_path,"KLE_0747_sub5.jpg"),os.path.join(root_path,"KLE_0747_sub6.jpg")],[os.path.join(root_path,"KLE_9797clean_sub5.jpg"),os.path.join(root_path,"KLE_9797clean_sub6.jpg")],[os.path.join(root_path,"KLE_9803clean_sub5.jpg"),os.path.join(root_path,"KLE_9803clean_sub6.jpg")],[os.path.join(root_path,"NKM_0063_sub5.jpg"),os.path.join(root_path,"NKM_0063_sub6.jpg")],[os.path.join(root_path,"NKM_0109_sub5.jpg"),os.path.join(root_path,"NKM_0109_sub6.jpg")],[os.path.join(root_path,"scene_1_sub5.jpg"),os.path.join(root_path,"scene_1_sub6.jpg")]])
+        # file_list["test"].extend([[os.path.join(root_path,"KLE_0309_exp_sub5.jpg"),os.path.join(root_path,"KLE_0309_exp_sub6.jpg")],[os.path.join(root_path,"KLE_0730_sub5.jpg"),os.path.join(root_path,"KLE_0730_sub6.jpg")],[os.path.join(root_path,"KLE_0747_sub5.jpg"),os.path.join(root_path,"KLE_0747_sub6.jpg")],[os.path.join(root_path,"KLE_9797clean_sub5.jpg"),os.path.join(root_path,"KLE_9797clean_sub6.jpg")],[os.path.join(root_path,"KLE_9803clean_sub5.jpg"),os.path.join(root_path,"KLE_9803clean_sub6.jpg")],[os.path.join(root_path,"NKM_0063_sub5.jpg"),os.path.join(root_path,"NKM_0063_sub6.jpg")],[os.path.join(root_path,"NKM_0109_sub5.jpg"),os.path.join(root_path,"NKM_0109_sub6.jpg")],[os.path.join(root_path,"scene_1_sub5.jpg"),os.path.join(root_path,"scene_1_sub6.jpg")]])
+        # file_list["train+valid"].extend([[os.path.join(root_path,"KLE_0309_exp_sub5.jpg"),os.path.join(root_path,"KLE_0309_exp_sub6.jpg")],[os.path.join(root_path,"KLE_0730_sub5.jpg"),os.path.join(root_path,"KLE_0730_sub6.jpg")],[os.path.join(root_path,"KLE_0747_sub5.jpg"),os.path.join(root_path,"KLE_0747_sub6.jpg")],[os.path.join(root_path,"KLE_9797clean_sub5.jpg"),os.path.join(root_path,"KLE_9797clean_sub6.jpg")],[os.path.join(root_path,"KLE_9803clean_sub5.jpg"),os.path.join(root_path,"KLE_9803clean_sub6.jpg")],[os.path.join(root_path,"NKM_0063_sub5.jpg"),os.path.join(root_path,"NKM_0063_sub6.jpg")],[os.path.join(root_path,"NKM_0109_sub5.jpg"),os.path.join(root_path,"NKM_0109_sub6.jpg")],[os.path.join(root_path,"scene_1_sub5.jpg"),os.path.join(root_path,"scene_1_sub6.jpg")]])
         # file_list["train"].extend([[os.path.join(root_path2,"9-AIT_pins_2.jpg"),os.path.join(root_path2,"9-AIT_pins_3.jpg")],[os.path.join(root_path2,"10-Hela_2.jpg"),os.path.join(root_path2,"10-Hela_3.jpg")],[os.path.join(root_path2,"11-Hela_1_2.jpg"),os.path.join(root_path2,"11-Hela_1_3.jpg")],])
         # file_list["train"].extend([[os.path.join(root_path2,"9-AIT_pins_2.jpg"),os.path.join(root_path2,"9-AIT_pins_0.jpg")],[os.path.join(root_path2,"10-Hela_2.jpg"),os.path.join(root_path2,"10-Hela_0.jpg")],[os.path.join(root_path2,"11-Hela_1_2.jpg"),os.path.join(root_path2,"11-Hela_1_0.jpg")],])
         # file_list["train"].extend([[os.path.join(root_path2,"9-AIT_pins_2.jpg"),os.path.join(root_path2,"9-AIT_pins_1.jpg")],[os.path.join(root_path2,"10-Hela_2.jpg"),os.path.join(root_path2,"10-Hela_1.jpg")],[os.path.join(root_path2,"11-Hela_1_2.jpg"),os.path.join(root_path2,"11-Hela_1_1.jpg")],])
@@ -38,13 +40,14 @@ class KLens(Dataset):
         return len(self.dataset[self.split])
 
     def __getitem__(self, idx):
-        im0_path, im1_path = self.dataset[self.split][idx]
+        im0_path, im1_path, raftflow_path = self.dataset[self.split][idx]
         img0 = skimage.io.imread(im0_path)
         img1 = skimage.io.imread(im1_path)
         img0 = torch.tensor(img0/255.).float()
         img1 = torch.tensor(img1/255.).float()
+        raftflow = frame_utils.readFlow(raftflow_path)
 
-        return img0, img1,np.array([]),np.array([]), [im0_path , im1_path]
+        return img0, img1,np.array([]),np.array([]), [im0_path , im1_path],raftflow
 
 
 class Flo:

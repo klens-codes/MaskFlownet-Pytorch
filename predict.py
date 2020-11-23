@@ -121,7 +121,7 @@ data_loader = torch.utils.data.DataLoader(dataset=dataset,
 epe = []
 for idx, sample in enumerate(data_loader):
     with torch.no_grad():
-        im0, im1, label, mask, path = sample
+        im0, im1, label, mask, path,raftflow = sample
         if config.value['dataset'] == 'klens':
             im0_path = path[0]
             im1_path = path[1]
@@ -150,7 +150,7 @@ for idx, sample in enumerate(data_loader):
         im0 = im0.to(device)
         im1 = im1.to(device)
 
-        pred, flows, warpeds = net(im0, im1)
+        pred, flows, warpeds = net(im0, im1, raftflow)
 
         up_flow = Upsample(pred[-1], 4)
         up_occ_mask = Upsample(flows[0], 4)
