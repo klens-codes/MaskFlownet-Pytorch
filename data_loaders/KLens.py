@@ -15,7 +15,7 @@ class KLens(Dataset):
     def __init__(self,raft_path="/data2/opticalflow/rnd/opticalflow/RAFT/out_klens_raft_chairs", root_path="/data2/opticalflow/KLENS/images/",root_path2="/data2/opticalflow/KLENS/pins/",filenumberlist=["0030","1106","1113","1132","1134","1167","1173"],split="train",ref="",meas=""):
         super(KLens, self).__init__()
         self.split = split
-        raftflowpaths = glob.glob(raft_path)
+        raftflowpaths = glob.glob(os.path.join(raft_path,"*.flo"))
         file_list = {}
         file_list['train'] = []
         file_list['valid'] = []
