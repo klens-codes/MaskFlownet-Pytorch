@@ -561,7 +561,7 @@ class MaskFlownet(nn.Module):
         print("raftflow.size()",raftflow.size())
         raftflow_rw = flows[0].shape[3]
         raftflow_rh = flows[0].shape[2]
-        raftflow = torch.Tensor([cv2.resize(raftflow[0].cpu().numpy(),(raftflow_rh,raftflow_rw))/20]).permute(0,3,1,2).to("cuda")
+        raftflow = torch.Tensor([cv2.resize(raftflow[0].cpu().numpy(),(raftflow_rw,raftflow_rh))/20]).permute(0,3,1,2).to("cuda")
         print("raftflow.size()",raftflow.size())
         rnd = random.random()
         cv2.imwrite("./flow["+str(rnd)+"].png",flow_viz.flow_to_image(flows[0][0].permute(1,2,0).cpu().numpy()))
