@@ -660,6 +660,7 @@ class MaskFlownet(nn.Module):
         flow2 = flow2 + self.dc_conv7(self.dc_conv6(self.dc_conv5(x)))
         preds = [flow * self.scale for flow in [flow6, flow5, flow4, flow3, flow2]]
         cv2.imwrite("./flow["+str(rnd)+"_flow2].png",flow_viz.flow_to_image(preds[4][0].permute(1,2,0).cpu().numpy()))
+        print("self.scale: ",self.scale)
         visuals = []
         visuals.append(flow2[:,:1])
         return preds, visuals, []
