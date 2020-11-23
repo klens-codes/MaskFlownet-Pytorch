@@ -24,6 +24,7 @@ class KLens(Dataset):
         
         for filenum in filenumberlist:
             for raftflowpath in raftflowpaths:
+                print(raftflowpath)
                 if "KLE_"+filenum in raftflowpath:
                     file_list['train'].append([os.path.join(root_path,"KLE_"+filenum+".jpg3.png"),os.path.join(root_path,"KLE_"+filenum+".jpg5.png"),raftflowpath])
         # file_list["train"].extend([[os.path.join(root_path,"KLE_0309_exp_sub5.jpg"),os.path.join(root_path,"KLE_0309_exp_sub6.jpg")],[os.path.join(root_path,"KLE_0730_sub5.jpg"),os.path.join(root_path,"KLE_0730_sub6.jpg")],[os.path.join(root_path,"KLE_0747_sub5.jpg"),os.path.join(root_path,"KLE_0747_sub6.jpg")],[os.path.join(root_path,"KLE_9797clean_sub5.jpg"),os.path.join(root_path,"KLE_9797clean_sub6.jpg")],[os.path.join(root_path,"KLE_9803clean_sub5.jpg"),os.path.join(root_path,"KLE_9803clean_sub6.jpg")],[os.path.join(root_path,"NKM_0063_sub5.jpg"),os.path.join(root_path,"NKM_0063_sub6.jpg")],[os.path.join(root_path,"NKM_0109_sub5.jpg"),os.path.join(root_path,"NKM_0109_sub6.jpg")],[os.path.join(root_path,"scene_1_sub5.jpg"),os.path.join(root_path,"scene_1_sub6.jpg")]])
