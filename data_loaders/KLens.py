@@ -21,7 +21,7 @@ class KLens(Dataset):
         file_list['valid'] = []
         file_list['test'] = []
         file_list['train+valid'] = []
-        file_list = {}
+        
         for filenum in filenumberlist:
             for raftflowpath in raftflowpaths:
                 if "KLE_"+filenum in raftflowpath:
