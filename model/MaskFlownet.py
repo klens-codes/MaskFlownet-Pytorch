@@ -557,9 +557,10 @@ class MaskFlownet(nn.Module):
         c45 = self.conv5z(self.conv5y(self.conv5x(c44)))
         c46 = self.conv6z(self.conv6y(self.conv6x(c45)))
 
-        print("flow[0] = ",flows[0][0].shape)
-        cv2.imwrite("./flow["+str(random.random())+"].png",flow_viz.flow_to_image(flows[0][0].permute(1,2,0).cpu().numpy()))
-
+        print("flow[0] = ",flows.shape)
+        rnd = random.random()
+        cv2.imwrite("./flow["+str(rnd)+"].png",flow_viz.flow_to_image(flows[0][0].permute(1,2,0).cpu().numpy()))
+        writeflow("./flow["+str(rnd)+"].flo",flows[0][0].permute(1,2,0).cpu().numpy()))
         flow6 = flows[0]
 
         warp6u = (flow6*self.scale/self.strides[0]).unsqueeze(1)
@@ -657,8 +658,8 @@ class MaskFlownet(nn.Module):
 
         x = self.dc_conv4(self.dc_conv3(self.dc_conv2(self.dc_conv1(x))))
         flow2 = flow2 + self.dc_conv7(self.dc_conv6(self.dc_conv5(x)))
-
         preds = [flow * self.scale for flow in [flow6, flow5, flow4, flow3, flow2]]
+        cv2.imwrite("./flow["+str(rnd)+"_flow2].png",flow_viz.flow_to_image(preds[4][0].permute(1,2,0).cpu().numpy()))
         visuals = []
         visuals.append(flow2[:,:1])
         return preds, visuals, []
