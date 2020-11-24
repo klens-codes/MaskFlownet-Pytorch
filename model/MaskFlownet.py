@@ -533,7 +533,7 @@ class MaskFlownet(nn.Module):
 
         return output*mask
 
-    def forward(self, im1, im2, raftflow):
+    def forward(self, im1, im2, raftflow=None):
 
         # im1 = x[:,:3,:,:]
         # im2 = x[:,3:,:,:]
@@ -566,7 +566,10 @@ class MaskFlownet(nn.Module):
         rnd = random.random()
         cv2.imwrite("./flow["+str(rnd)+"].png",flow_viz.flow_to_image(flows[0][0].permute(1,2,0).cpu().numpy()))
         writeFlow("./flow["+str(rnd)+"].flo",flows[0][0].permute(1,2,0).cpu().numpy())
-        flow6 = raftflow
+        if raftflow=None:
+            flow6 = flows[0]
+        else:
+            flow6 = raftflow
 
         warp6u = (flow6*self.scale/self.strides[0]).unsqueeze(1)
         warp6u = torch.repeat_interleave(warp6u, 9, 1)
