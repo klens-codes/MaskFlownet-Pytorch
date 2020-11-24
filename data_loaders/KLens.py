@@ -41,7 +41,10 @@ class KLens(Dataset):
         return len(self.dataset[self.split])
 
     def __getitem__(self, idx):
-        im0_path, im1_path, raftflow_path = self.dataset[self.split][idx]
+        try:
+            im0_path, im1_path, raftflow_path = self.dataset[self.split][idx]
+        except:
+            im0_path, im1_path = self.dataset[self.split][idx]
         img0 = skimage.io.imread(im0_path)
         img1 = skimage.io.imread(im1_path)
         img0 = torch.tensor(img0/255.).float()

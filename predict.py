@@ -126,17 +126,9 @@ for idx, sample in enumerate(data_loader):
             im0_path = path[0]
             im1_path = path[1]
 
-        # if isinstance(mask, list):
-        #     mask = torch.ones((label.shape[0], label.shape[1], label.shape[2], 1), dtype=label.dtype, device=device)
-
         im0 = im0.permute(0, 3, 1, 2)
         im1 = im1.permute(0, 3, 1, 2)
         im0, im1, _ = centralize(im0, im1)
-
-        # The original MxNet implementation of MaskFlownet predict the flipped flow
-        # label = label.permute(0, 3, 1, 2).to(device).flip(1)
-
-        # mask = mask.permute(0, 3, 1, 2).to(device)
 
         shape = im0.shape
         pad_h = (64 - shape[2] % 64) % 64
