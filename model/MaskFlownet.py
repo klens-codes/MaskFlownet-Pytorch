@@ -557,7 +557,7 @@ class MaskFlownet(nn.Module):
         c45 = self.conv5z(self.conv5y(self.conv5x(c44)))
         c46 = self.conv6z(self.conv6y(self.conv6x(c45)))
 
-        if raftflow != np.array([]):
+        if len(raftflow.size()) < 3:
             print("flow[0] = ",flows[0].shape)
             print("raftflow.size()",raftflow.size())
             raftflow_rw = flows[0].shape[3]
@@ -569,7 +569,7 @@ class MaskFlownet(nn.Module):
             writeFlow("./flow["+str(rnd)+"].flo",flows[0][0].permute(1,2,0).cpu().numpy())
 
         # setting flow6 from other algorithm
-        if raftflow==np.array([]):
+        if len(raftflow.size()) < 3:
             flow6 = flows[0]
         else:
             flow6 = raftflow
