@@ -557,15 +557,18 @@ class MaskFlownet(nn.Module):
         c45 = self.conv5z(self.conv5y(self.conv5x(c44)))
         c46 = self.conv6z(self.conv6y(self.conv6x(c45)))
 
-        print("flow[0] = ",flows[0].shape)
-        print("raftflow.size()",raftflow.size())
-        raftflow_rw = flows[0].shape[3]
-        raftflow_rh = flows[0].shape[2]
-        raftflow = torch.Tensor([cv2.resize(raftflow[0].cpu().numpy(),(raftflow_rw,raftflow_rh))/20]).permute(0,3,1,2).to("cuda")
-        print("raftflow.size()",raftflow.size())
-        rnd = random.random()
-        cv2.imwrite("./flow["+str(rnd)+"].png",flow_viz.flow_to_image(flows[0][0].permute(1,2,0).cpu().numpy()))
-        writeFlow("./flow["+str(rnd)+"].flo",flows[0][0].permute(1,2,0).cpu().numpy())
+        if raftflow != None:
+            print("flow[0] = ",flows[0].shape)
+            print("raftflow.size()",raftflow.size())
+            raftflow_rw = flows[0].shape[3]
+            raftflow_rh = flows[0].shape[2]
+            raftflow = torch.Tensor([cv2.resize(raftflow[0].cpu().numpy(),(raftflow_rw,raftflow_rh))/20]).permute(0,3,1,2).to("cuda")
+            print("raftflow.size()",raftflow.size())
+            rnd = random.random()
+            cv2.imwrite("./flow["+str(rnd)+"].png",flow_viz.flow_to_image(flows[0][0].permute(1,2,0).cpu().numpy()))
+            writeFlow("./flow["+str(rnd)+"].flo",flows[0][0].permute(1,2,0).cpu().numpy())
+
+        # setting flow6 from other algorithm
         if raftflow==None:
             flow6 = flows[0]
         else:
