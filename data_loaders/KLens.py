@@ -46,7 +46,7 @@ class KLens(Dataset):
             raftflow = frame_utils.readFlow(raftflow_path)
         except:
             im0_path, im1_path = self.dataset[self.split][idx]
-            raftflow_path = None
+            raftflow = None
         img0 = skimage.io.imread(im0_path)
         img1 = skimage.io.imread(im1_path)
         img0 = torch.tensor(img0/255.).float()
