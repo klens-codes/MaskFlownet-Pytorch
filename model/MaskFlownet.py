@@ -558,7 +558,7 @@ class MaskFlownet(nn.Module):
         c46 = self.conv6z(self.conv6y(self.conv6x(c45)))
 
         print(raftflow.size())
-        if len(raftflow.size()) < 3:
+        if len(raftflow.size()) > 3:
             print("flow[0] = ",flows[0].shape)
             print("raftflow.size()",raftflow.size())
             raftflow_rw = flows[0].shape[3]
