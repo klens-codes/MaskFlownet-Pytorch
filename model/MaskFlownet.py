@@ -566,7 +566,7 @@ class MaskFlownet(nn.Module):
         rnd = random.random()
         cv2.imwrite("./flow["+str(rnd)+"].png",flow_viz.flow_to_image(flows[0][0].permute(1,2,0).cpu().numpy()))
         writeFlow("./flow["+str(rnd)+"].flo",flows[0][0].permute(1,2,0).cpu().numpy())
-        if raftflow=None:
+        if raftflow==None:
             flow6 = flows[0]
         else:
             flow6 = raftflow
