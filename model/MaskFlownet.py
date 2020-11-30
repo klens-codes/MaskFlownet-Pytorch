@@ -533,7 +533,7 @@ class MaskFlownet(nn.Module):
 
         return output*mask
 
-    def forward(self, im1, im2, raftflow=None):
+    def forward(self, im1, im2, raftflow=None, im1_path=None, im2_path=None):
 
         # im1 = x[:,:3,:,:]
         # im2 = x[:,3:,:,:]
@@ -566,8 +566,8 @@ class MaskFlownet(nn.Module):
             raftflow = torch.Tensor([cv2.resize(raftflow[0].cpu().numpy(),(raftflow_rw,raftflow_rh))/20]).permute(0,3,1,2).to("cuda")
             print("raftflow.size()",raftflow.size())
             rnd = random.random()
-            cv2.imwrite("./flow["+str(rnd)+"].png",flow_viz.flow_to_image(flows[0][0].permute(1,2,0).cpu().numpy()))
-            writeFlow("./flow["+str(rnd)+"].flo",flows[0][0].permute(1,2,0).cpu().numpy())
+            cv2.imwrite("./flow["+str(os.path.split(im1_path)[1])+"_"+str(os.path.split(im2_path)[1])+"].png",flow_viz.flow_to_image(flows[0][0].permute(1,2,0).cpu().numpy()))
+            writeFlow("./flow["+str(os.path.split(im1_path)[1])+"_"+str(os.path.split(im2_path)[1])+"].flo",flows[0][0].permute(1,2,0).cpu().numpy())
 
         # setting flow6 from other algorithm
         if len(raftflow.size()) < 3:

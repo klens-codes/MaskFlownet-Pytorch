@@ -142,7 +142,7 @@ for idx, sample in enumerate(data_loader):
         im0 = im0.to(device)
         im1 = im1.to(device)
 
-        pred, flows, warpeds = net(im0, im1, raftflow)
+        pred, flows, warpeds = net(im0, im1, raftflow, im0_path, im1_path)
 
         up_flow = Upsample(pred[-1], 4)
         up_occ_mask = Upsample(flows[0], 4)
