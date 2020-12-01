@@ -8,6 +8,7 @@ from torchvision import ops
 from frame_utils import writeFlow
 import flow_viz
 import cv2
+import os
 # ops.DeformConv2d()
 
 from .correlation_package.correlation import Correlation
@@ -566,6 +567,7 @@ class MaskFlownet(nn.Module):
             raftflow = torch.Tensor([cv2.resize(raftflow[0].cpu().numpy(),(raftflow_rw,raftflow_rh))/20]).permute(0,3,1,2).to("cuda")
             print("raftflow.size()",raftflow.size())
             rnd = random.random()
+            print(im1_path)
             cv2.imwrite("./flow["+str(os.path.split(im1_path)[1])+"_"+str(os.path.split(im2_path)[1])+"].png",flow_viz.flow_to_image(flows[0][0].permute(1,2,0).cpu().numpy()))
             writeFlow("./flow["+str(os.path.split(im1_path)[1])+"_"+str(os.path.split(im2_path)[1])+"].flo",flows[0][0].permute(1,2,0).cpu().numpy())
 
